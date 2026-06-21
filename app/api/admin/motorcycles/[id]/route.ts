@@ -11,7 +11,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json()
-  const { data, error } = await adminClient.from('motorcycles').update(body).eq('id', id).select().single()
+  const allowed = ['name', 'type', 'description', 'price_per_day', 'location', 'image_url', 'is_available']
+  const payload = Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)))
+  const { data, error } = await adminClient.from('motorcycles').update(payload).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ motorcycle: data })
 }

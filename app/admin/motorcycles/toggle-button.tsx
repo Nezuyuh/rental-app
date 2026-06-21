@@ -15,14 +15,18 @@ export function ToggleButton({ motorcycleId, isAvailable }: ToggleButtonProps) {
 
   const toggle = async () => {
     setLoading(true)
+    const prev = current
+    setCurrent(!current)
     try {
-      await fetch(`/api/admin/motorcycles/${motorcycleId}`, {
+      const res = await fetch(`/api/admin/motorcycles/${motorcycleId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_available: !current }),
+        body: JSON.stringify({ is_available: !prev }),
       })
-      setCurrent(!current)
+      if (!res.ok) throw new Error()
       router.refresh()
+    } catch {
+      setCurrent(prev)
     } finally {
       setLoading(false)
     }

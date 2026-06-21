@@ -11,9 +11,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json()
+  const { status, payment_status } = body
+  const payload: Record<string, string> = {}
+  if (status) payload.status = status
+  if (payment_status) payload.payment_status = payment_status
   const { data, error } = await adminClient
     .from('bookings')
-    .update(body)
+    .update(payload)
     .eq('id', id)
     .select()
     .single()

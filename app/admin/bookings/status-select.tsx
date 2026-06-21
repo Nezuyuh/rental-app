@@ -15,14 +15,18 @@ export function StatusSelect({ bookingId, currentStatus }: StatusSelectProps) {
 
   const update = async (status: string) => {
     setLoading(true)
+    const prev = value
     setValue(status)
     try {
-      await fetch(`/api/admin/bookings/${bookingId}`, {
+      const res = await fetch(`/api/admin/bookings/${bookingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       })
+      if (!res.ok) throw new Error()
       router.refresh()
+    } catch {
+      setValue(prev)
     } finally {
       setLoading(false)
     }

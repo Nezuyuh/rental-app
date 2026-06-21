@@ -10,66 +10,11 @@ import {
   ChevronRight,
   CheckCircle,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase-server";
 
 const LOGO_URL =
   "https://bvzigsuidankvlxhqidn.supabase.co/storage/v1/object/public/motorent-assets/logo.jpg";
 
-const motorcycles = [
-  {
-    id: 1,
-    name: "Honda Click 125i",
-    type: "Scooter",
-    price: 350,
-    rating: 4.8,
-    reviews: 124,
-    location: "Cebu City",
-  },
-  {
-    id: 2,
-    name: "Yamaha NMAX 155",
-    type: "Maxi Scooter",
-    price: 450,
-    rating: 4.9,
-    reviews: 87,
-    location: "Cebu City",
-  },
-  {
-    id: 3,
-    name: "Honda ADV 160",
-    type: "Adventure",
-    price: 500,
-    rating: 4.7,
-    reviews: 56,
-    location: "Lapu-Lapu City",
-  },
-  {
-    id: 4,
-    name: "Yamaha MT-15",
-    type: "Naked Sport",
-    price: 600,
-    rating: 4.9,
-    reviews: 43,
-    location: "Mandaue City",
-  },
-  {
-    id: 5,
-    name: "Honda BeAT",
-    type: "Scooter",
-    price: 300,
-    rating: 4.6,
-    reviews: 198,
-    location: "Cebu City",
-  },
-  {
-    id: 6,
-    name: "Suzuki Raider R150",
-    type: "Underbone",
-    price: 400,
-    rating: 4.8,
-    reviews: 72,
-    location: "Talisay City",
-  },
-];
 
 const features = [
   {
@@ -101,7 +46,15 @@ const steps = [
   { num: "04", title: "Ride!", desc: "Pick up your motorcycle and hit the road. Enjoy the journey." },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient()
+  const { data: motorcycles } = await supabase
+    .from('motorcycles')
+    .select('*')
+    .eq('is_available', true)
+    .order('rating', { ascending: false })
+    .limit(6)
+
   return (
     <div className="min-h-screen bg-white">
       {/* ── Navbar ── */}
@@ -242,11 +195,11 @@ export default function HomePage() {
                   <span className="mx-1">·</span>
                   <Star size={13} className="text-yellow-400 fill-yellow-400" />
                   <span className="text-gray-600 font-medium">{moto.rating}</span>
-                  <span>({moto.reviews})</span>
+                  <span>({moto.review_count})</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xl font-extrabold text-gray-900">₱{moto.price}</span>
+                    <span className="text-xl font-extrabold text-gray-900">₱{moto.price_per_day}</span>
                     <span className="text-sm text-gray-400"> / day</span>
                   </div>
                   <Link
@@ -354,10 +307,15 @@ export default function HomePage() {
           <div>
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              {["Fleet", "How it works", "Why us", "Book now"].map((l) => (
-                <li key={l}>
-                  <Link href="#" className="hover:text-orange-400 transition-colors">
-                    {l}
+              {[
+                { label: "Fleet", href: "#fleet" },
+                { label: "How it works", href: "#how" },
+                { label: "Why us", href: "#why" },
+                { label: "Book now", href: "/register" },
+              ].map((l) => (
+                <li key={l.label}>
+                  <Link href={l.href} className="hover:text-orange-400 transition-colors">
+                    {l.label}
                   </Link>
                 </li>
               ))}

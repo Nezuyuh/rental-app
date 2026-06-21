@@ -23,7 +23,9 @@ export async function POST(req: Request) {
   if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json()
-  const { data, error } = await adminClient.from('motorcycles').insert(body).select().single()
+  const { name, type, description, price_per_day, location, image_url, is_available } = body
+  const payload = { name, type, description, price_per_day, location, image_url, is_available: is_available ?? true }
+  const { data, error } = await adminClient.from('motorcycles').insert(payload).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ motorcycle: data }, { status: 201 })
 }
