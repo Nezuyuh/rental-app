@@ -38,12 +38,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           >
             Fleet
           </a>
-          <a
-            href="/admin/bookings"
-            className="text-sm text-gray-300 hover:text-white transition-colors"
-          >
-            Bookings
-          </a>
         </div>
         <div className="flex items-center gap-4">
           <a
