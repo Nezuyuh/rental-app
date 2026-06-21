@@ -19,7 +19,7 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
       if (error) {
         setError(error.message)
@@ -27,7 +27,13 @@ export default function LoginPage() {
         return
       }
 
-      router.push('/dashboard')
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      router.push(profile?.role === 'admin' ? '/admin' : '/dashboard')
     } catch {
       setError('An unexpected error occurred. Please try again.')
       setLoading(false)

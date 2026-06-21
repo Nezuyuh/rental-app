@@ -40,12 +40,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </a>
         </div>
         <div className="flex items-center gap-4">
-          <a
-            href="/dashboard"
-            className="text-sm text-gray-300 hover:text-white transition-colors"
-          >
-            User Dashboard
-          </a>
           <form action="/api/auth/signout" method="POST">
             <button className="text-sm text-gray-300 hover:text-white transition-colors">
               Sign out

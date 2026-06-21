@@ -16,6 +16,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
+  if (profile?.role === 'admin') redirect('/admin')
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top nav */}
