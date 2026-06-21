@@ -1,6 +1,7 @@
 import { adminClient } from '@/lib/supabase-server'
 import type { Booking } from '@/lib/types'
 import { StatusSelect } from './bookings/status-select'
+import { AddBookingForm } from './add-booking-form'
 
 const STATUS_STYLES: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -17,6 +18,8 @@ export default async function AdminDashboardPage() {
     { count: pendingCount },
     { data: completedBookings },
     { data: bookings },
+    { data: customers },
+    { data: fleet },
   ] = await Promise.all([
     adminClient.from('motorcycles').select('*', { count: 'exact', head: true }),
     adminClient.from('bookings').select('*', { count: 'exact', head: true }),
@@ -26,6 +29,8 @@ export default async function AdminDashboardPage() {
       .from('bookings')
       .select('*, motorcycle:motorcycles(name, type), profile:profiles(full_name, phone)')
       .order('created_at', { ascending: false }),
+    adminClient.from('profiles').select('id, full_name').order('full_name'),
+    adminClient.from('motorcycles').select('id, name, price_per_day').order('name'),
   ])
 
   const revenue = (completedBookings || []).reduce(
@@ -56,9 +61,15 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-bold text-gray-900">All Bookings</h2>
-          <span className="text-sm text-gray-400">{typedBookings.length} total</span>
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <h2 className="font-bold text-gray-900">All Bookings</h2>
+            <span className="text-sm text-gray-400">{typedBookings.length} total</span>
+          </div>
+          <AddBookingForm
+            customers={customers || []}
+            motorcycles={fleet || []}
+          />
         </div>
 
         {typedBookings.length === 0 ? (
