@@ -174,7 +174,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {motorcycles.map((moto) => (
+          {(motorcycles ?? []).map((moto) => (
             <div
               key={moto.id}
               className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group"
